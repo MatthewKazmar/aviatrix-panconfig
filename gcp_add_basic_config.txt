@@ -1,0 +1,26 @@
+set address rfc10 ip-netmask 10.0.0.0/8
+set address rfc172 ip-netmask 172.16.0.0/12
+set address rfc192 ip-netmask 192.168.0.0/16
+set address-group rfc static [ rfc10 rfc172 rfc192 ]
+
+set rulebase security rules to-Internet to external
+set rulebase security rules to-Internet from internal
+set rulebase security rules to-Internet source any
+set rulebase security rules to-Internet destination any
+set rulebase security rules to-Internet source-user any
+set rulebase security rules to-Internet category any
+set rulebase security rules to-Internet application any
+set rulebase security rules to-Internet service application-default
+set rulebase security rules to-Internet hip-profiles any
+set rulebase security rules to-Internet action allow
+
+set rulebase security rules rfc to internal
+set rulebase security rules rfc from internal
+set rulebase security rules rfc source rfc
+set rulebase security rules rfc destination rfc
+set rulebase security rules rfc source-user any
+set rulebase security rules rfc category any
+set rulebase security rules rfc application any
+set rulebase security rules rfc service any
+set rulebase security rules rfc hip-profiles any
+set rulebase security rules rfc action allow

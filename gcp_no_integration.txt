@@ -1,0 +1,29 @@
+set network virtual-router default routing-table ip static-route back-to-gateway nexthop ip-address nic1_nexthop
+set network virtual-router default routing-table ip static-route back-to-gateway interface ethernet1/2
+set network virtual-router default routing-table ip static-route back-to-gateway metric 10
+set network virtual-router default routing-table ip static-route back-to-gateway destination rfc10
+set network virtual-router default routing-table ip static-route back-to-gateway route-table unicast
+
+set network virtual-router default routing-table ip static-route back-to-gateway nexthop ip-address nic1_nexthop
+set network virtual-router default routing-table ip static-route back-to-gateway interface ethernet1/2
+set network virtual-router default routing-table ip static-route back-to-gateway metric 10
+set network virtual-router default routing-table ip static-route back-to-gateway destination rfc172
+set network virtual-router default routing-table ip static-route back-to-gateway route-table unicast
+
+set network virtual-router default routing-table ip static-route back-to-gateway nexthop ip-address nic1_nexthop
+set network virtual-router default routing-table ip static-route back-to-gateway interface ethernet1/2
+set network virtual-router default routing-table ip static-route back-to-gateway metric 10
+set network virtual-router default routing-table ip static-route back-to-gateway destination rfc192
+set network virtual-router default routing-table ip static-route back-to-gateway route-table unicast
+
+set network virtual-router default routing-table ip static-route to-gcp-healthcheck-cidr-1 nexthop ip-address nic1_nexthop
+set network virtual-router default routing-table ip static-route to-gcp-healthcheck-cidr-1 interface ethernet1/2
+set network virtual-router default routing-table ip static-route to-gcp-healthcheck-cidr-1 metric 10
+set network virtual-router default routing-table ip static-route to-gcp-healthcheck-cidr-1 destination gcp-healthcheck-cidr-1
+set network virtual-router default routing-table ip static-route to-gcp-healthcheck-cidr-1 route-table unicast
+
+set network virtual-router default routing-table ip static-route to-gcp-healthcheck-cidr-2 nexthop ip-address nic1_nexthop
+set network virtual-router default routing-table ip static-route to-gcp-healthcheck-cidr-2 interface ethernet1/2
+set network virtual-router default routing-table ip static-route to-gcp-healthcheck-cidr-2 destination gcp-healthcheck-cidr-2
+set network virtual-router default routing-table ip static-route to-gcp-healthcheck-cidr-2 route-table unicast
+set network virtual-router default routing-table ip static-route to-gcp-healthcheck-cidr-2 metric 10

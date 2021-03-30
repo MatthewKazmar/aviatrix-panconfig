@@ -1,0 +1,64 @@
+set network profiles interface-management-profile https https yes
+set network profiles interface-management-profile https ping no
+
+set address gcp-healthcheck-cidr-1 ip-netmask 35.191.0.0/16
+set address gcp-healthcheck-cidr-2 ip-netmask 130.211.0.0/22
+set address gcp-healthcheck-loopback ip-netmask 100.64.0.1/32
+
+set address-group gcp-healthcheck-cidrs static [ gcp-healthcheck-cidr-1 gcp-healthcheck-cidr-2 ]
+
+set network interface ethernet ethernet1/1 layer3 dhcp-client create-default-route yes
+set network interface ethernet ethernet1/1 comment external
+set network interface ethernet ethernet1/2 layer3 dhcp-client create-default-route no
+set network interface ethernet ethernet1/2 comment internal
+
+set network interface loopback units loopback.1 adjust-tcp-mss enable no
+set network interface loopback units loopback.1 ip gcp-healthcheck-loopback
+set network interface loopback units loopback.1 interface-management-profile https
+set network interface loopback units loopback.1 comment healthcheck
+
+set zone external network layer3 ethernet1/1
+set zone internal network layer3 [ ethernet1/2 loopback.1 ]
+
+set network virtual-router default interface [ ethernet1/1 ethernet1/2 loopback.1 ]
+set network virtual-router default ecmp algorithm ip-modulo
+set network virtual-router default ecmp enable yes
+set network virtual-router default ecmp symmetric-return yes
+
+set rulebase security rules gcp-healthcheck-internal to internal
+set rulebase security rules gcp-healthcheck-internal from internal
+set rulebase security rules gcp-healthcheck-internal source gcp-healthcheck-cidrs
+set rulebase security rules gcp-healthcheck-internal destination any
+set rulebase security rules gcp-healthcheck-internal source-user any
+set rulebase security rules gcp-healthcheck-internal category any
+set rulebase security rules gcp-healthcheck-internal application any
+set rulebase security rules gcp-healthcheck-internal service service-https
+set rulebase security rules gcp-healthcheck-internal hip-profiles any
+set rulebase security rules gcp-healthcheck-internal action allow
+set rulebase security rules gcp-healthcheck-internal disabled no
+
+set rulebase security rules default_deny to any
+set rulebase security rules default_deny from any
+set rulebase security rules default_deny source any
+set rulebase security rules default_deny destination any
+set rulebase security rules default_deny source-user any
+set rulebase security rules default_deny category any
+set rulebase security rules default_deny application any
+set rulebase security rules default_deny service any
+set rulebase security rules default_deny hip-profiles any
+set rulebase security rules default_deny action deny
+
+set rulebase nat rules gcp-healthcheck dynamic-destination-translation translated-address gcp-healthcheck-loopback
+set rulebase nat rules gcp-healthcheck to internal
+set rulebase nat rules gcp-healthcheck from internal
+set rulebase nat rules gcp-healthcheck source gcp-healthcheck-cidrs
+set rulebase nat rules gcp-healthcheck destination any
+set rulebase nat rules gcp-healthcheck service any
+
+set rulebase nat rules to-internet source-translation dynamic-ip-and-port interface-address interface ethernet1/1
+set rulebase nat rules to-internet to external
+set rulebase nat rules to-internet from internal
+set rulebase nat rules to-internet source any
+set rulebase nat rules to-internet destination any
+set rulebase nat rules to-internet service any
+set rulebase nat rules to-internet to-interface ethernet1/1
