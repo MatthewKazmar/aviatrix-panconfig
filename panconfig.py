@@ -72,10 +72,10 @@ except:
   print('Can''t find the gcp_required_config.txt file. This is required.')
   sys.exit()
 try:
-  add_basic_config_cmds = (open('gcp_add_basic_config.txt','r')).readlines()
+  add_basic_config_cmds = (open('add_basic_config.txt','r')).readlines()
 except:
   if addbasicconfig:
-    print('Can''t find the gcp_add_basic_config.txt file.' )
+    print('Can''t find the add_basic_config.txt file.' )
     addbasicconfig = False
 try:
   no_integration_cmds = (open('gcp_no_integration.txt','r')).readlines()

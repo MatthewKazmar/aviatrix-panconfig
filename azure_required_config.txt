@@ -1,0 +1,35 @@
+set network profiles interface-management-profile https https yes
+set network profiles interface-management-profile https ping no
+
+set network interface ethernet ethernet1/1 layer3 dhcp-client create-default-route no
+set network interface ethernet ethernet1/1 comment external
+set network interface ethernet ethernet1/2 layer3 dhcp-client create-default-route no
+set network interface ethernet ethernet1/2 comment internal
+
+set zone external network layer3 ethernet1/1
+set zone internal network layer3 ethernet1/2
+
+set network virtual-router default interface [ ethernet1/1 ethernet1/2 ]
+set network virtual-router default ecmp algorithm ip-modulo
+set network virtual-router default ecmp enable yes
+set network virtual-router default ecmp symmetric-return yes
+
+set rulebase security rules default_deny to any
+set rulebase security rules default_deny from any
+set rulebase security rules default_deny source any
+set rulebase security rules default_deny destination any
+set rulebase security rules default_deny source-user any
+set rulebase security rules default_deny category any
+set rulebase security rules default_deny application any
+set rulebase security rules default_deny service any
+set rulebase security rules default_deny hip-profiles any
+set rulebase security rules default_deny action deny
+
+set rulebase nat rules to-internet source-translation dynamic-ip-and-port interface-address interface ethernet1/1
+set rulebase nat rules to-internet to external
+set rulebase nat rules to-internet from internal
+set rulebase nat rules to-internet source any
+set rulebase nat rules to-internet destination any
+set rulebase nat rules to-internet service any
+set rulebase nat rules to-internet to-interface ethernet1/1
+

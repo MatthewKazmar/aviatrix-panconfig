@@ -1,0 +1,36 @@
+set address rfc10 ip-netmask 10.0.0.0/8
+set address rfc172 ip-netmask 172.16.0.0/12
+set address rfc192 ip-netmask 192.168.0.0/16
+set address-group rfc static [ rfc10 rfc172 rfc192 ]
+
+set address azure_lb_vip ip-netmask 168.63.129.16/32
+
+set network virtual-router default routing-table ip static-route back-to-gateway nexthop ip-address nic1_nexthop
+set network virtual-router default routing-table ip static-route back-to-gateway interface ethernet1/2
+set network virtual-router default routing-table ip static-route back-to-gateway metric 10
+set network virtual-router default routing-table ip static-route back-to-gateway destination rfc10
+set network virtual-router default routing-table ip static-route back-to-gateway route-table unicast
+
+set network virtual-router default routing-table ip static-route back-to-gateway nexthop ip-address nic1_nexthop
+set network virtual-router default routing-table ip static-route back-to-gateway interface ethernet1/2
+set network virtual-router default routing-table ip static-route back-to-gateway metric 10
+set network virtual-router default routing-table ip static-route back-to-gateway destination rfc172
+set network virtual-router default routing-table ip static-route back-to-gateway route-table unicast
+
+set network virtual-router default routing-table ip static-route back-to-gateway nexthop ip-address nic1_nexthop
+set network virtual-router default routing-table ip static-route back-to-gateway interface ethernet1/2
+set network virtual-router default routing-table ip static-route back-to-gateway metric 10
+set network virtual-router default routing-table ip static-route back-to-gateway destination rfc192
+set network virtual-router default routing-table ip static-route back-to-gateway route-table unicast
+
+set network virtual-router default routing-table ip static-route back-to-gateway nexthop ip-address nic0_nexthop
+set network virtual-router default routing-table ip static-route back-to-gateway interface ethernet1/1
+set network virtual-router default routing-table ip static-route back-to-gateway metric 10
+set network virtual-router default routing-table ip static-route back-to-gateway destination azure_lb_vip
+set network virtual-router default routing-table ip static-route back-to-gateway route-table unicast
+
+set network virtual-router default routing-table ip static-route back-to-gateway nexthop ip-address nic1_nexthop
+set network virtual-router default routing-table ip static-route back-to-gateway interface ethernet1/2
+set network virtual-router default routing-table ip static-route back-to-gateway metric 10
+set network virtual-router default routing-table ip static-route back-to-gateway destination azure_lb_vip
+set network virtual-router default routing-table ip static-route back-to-gateway route-table unicast
