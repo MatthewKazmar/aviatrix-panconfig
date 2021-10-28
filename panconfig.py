@@ -1,6 +1,5 @@
 #Deploys a baseline Palo Alto config
 
-
 import os, requests, urllib3, paramiko, sys, time, getpass
 from netmiko.paloalto import PaloAltoPanosSSH
 from ipaddress import IPv4Network
@@ -65,6 +64,27 @@ if not pan_password:
         print("  Please enter the same password on both lines.")
   pan_password = fwpw
 
+ctrl_url = 'https://{}/v1/api'.format(controller_ip)
+download_url = 'https://{}/v1/download'.format(controller_ip)
+
+#Get CID
+payload = { 'action': 'login', 'username': controller_username, 'password': controller_password }
+response = requests.request("POST", ctrl_url, data=payload, verify = False)
+cid = response.json()['CID']
+
+#Get PAN IP, nexthop and PEM name
+payload = { 'action': 'get_instance_by_id', 'CID': cid, 'instance_id': instance_id }
+response = requests.request("POST", ctrl_url, data=payload, verify = False)
+pan_ip = response.json()['results']['management_public_ip']
+pan_egress_nexthop = str(IPv4Network(response.json()['results']['egress_subnet'])[1])
+pan_lan_nexthop = str(IPv4Network(response.json()['results']['lan_subnet'])[1])
+key_file = response.json()['results']['key_file']
+
+#Get PEM/private key
+payload = { 'CID': cid, 'filename': key_file}
+response = requests.request("POST", download_url, data=payload, verify=False)
+private_key = paramiko.RSAKey.from_private_key(StringIO(response.text))
+
 #Get config
 try:
   required_config_cmds = (open('gcp_required_config.txt','r')).readlines()
@@ -87,26 +107,6 @@ except:
 #print(add_basic_config_cmds)
 #print(no_integration_cmds)
 
-ctrl_url = 'https://{}/v1/api'.format(controller_ip)
-download_url = 'https://{}/v1/download'.format(controller_ip)
-
-#Get CID
-payload = { 'action': 'login', 'username': controller_username, 'password': controller_password }
-response = requests.request("POST", ctrl_url, data=payload, verify = False)
-cid = response.json()['CID']
-
-#Get PAN IP, nexthop and PEM name
-payload = { 'action': 'get_instance_by_id', 'CID': cid, 'instance_id': instance_id }
-response = requests.request("POST", ctrl_url, data=payload, verify = False)
-pan_ip = response.json()['results']['management_public_ip']
-pan_egress_nexthop = str(IPv4Network(response.json()['results']['egress_subnet'])[1])
-pan_lan_nexthop = str(IPv4Network(response.json()['results']['lan_subnet'])[1])
-key_file = response.json()['results']['key_file']
-
-#Get PEM/private key
-payload = { 'CID': cid, 'filename': key_file}
-response = requests.request("POST", download_url, data=payload, verify=False)
-private_key = paramiko.RSAKey.from_private_key(StringIO(response.text))
 
 #Log in to firewall
 #Try 10 times, wait 30 seconds each time
